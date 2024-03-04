@@ -13,7 +13,7 @@ import {
     Avatar
 } from './../components/styles.js';
 
-const Welcome = () => {
+const Welcome = ({navigation}) => {
 
   return (
     <>
@@ -24,7 +24,7 @@ const Welcome = () => {
                 resizeMode="cover"
             />
             <WelcomeContainer>
-                <PageTitle welcome={true}>Welcome! Buddy!</PageTitle>
+                <PageTitle welcome={true}>Welcome! Buddy</PageTitle>
                 <SubTitle welcome={true}>Kshitij Gupta</SubTitle>
                 <SubTitle welcome={true}>kshitij@gmail.com</SubTitle>
                 <StyledFormArea>
@@ -33,7 +33,7 @@ const Welcome = () => {
                         resizeMode="cover"
                     />        
                     <Line />
-                    <StyledButton onPress={() => {}}>
+                    <StyledButton onPress={() => {navigation.navigate("Login")}}>
                         <ButtonText>Logout</ButtonText>
                     </StyledButton>
                 </StyledFormArea>

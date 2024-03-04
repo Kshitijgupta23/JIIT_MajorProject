@@ -1,8 +1,9 @@
-import Login from './screens/Login.jsx';
+import Login from './screens/Login';
+import Signup from './screens/Signup';
 
 export default function App() {
   return (
-    <Login />
+    <Signup />
   );
 }
 

@@ -101,7 +101,7 @@ router.post('/signin', (req,res) => {
                     if(result){
                         res.json({
                             status: "Success",
-                            message: "Login successfull",
+                            message: "Login Successfull!",
                             data: data
                         });
                     }else{

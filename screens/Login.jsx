@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { View, Text } from 'react-native';
+import { View, Text, ActivityIndicator } from 'react-native';
 import { StatusBar } from 'expo-status-bar';
 import { Formik } from 'formik';
 
@@ -28,12 +28,46 @@ import {
 } from './../components/styles.js';
 
 import KeyboardAvoidingWrapper from './../components/KeyboardAvoidingWrapper.jsx';
+import axios from 'axios';
 
 const {brand, darkLight, primary } = Colors;
 
 const Login = ({navigation}) => {
 
   const [hidePassword, setHidePassword] = useState(true);
+  const [message, setMessage] = useState();
+  const [messageType, setMessageType] = useState();
+
+  const handleLogin = async (credentials, setSubmitting) => {
+        handleMessage(null);
+        const url = 'http://192.168.29.168:3000/user/signin';
+     
+        axios
+        .post(url,credentials)
+        .then((response) => {
+            const result = response.data;
+            const {message, status, data } = result;
+            if(status.toLowerCase() !== 'success'){
+                handleMessage(message, status);
+            }else{
+                console.log('NOT NAVIGATE');
+                navigation.navigate("Signup");
+                navigation.navigate("Welcome",{...data[0]});
+                console.log('NOT NAVIGATE');
+            }
+            setSubmitting(false);
+        })
+        .catch(error => {
+            console.log(error);
+            setSubmitting(false);
+            handleMessage("An error occurred, check your internet and try again.");
+        })
+  }
+
+  const handleMessage = (message, type = 'FAILED') =>{
+    setMessage(message);
+    setMessageType(type);
+  }
 
   return (
     <KeyboardAvoidingWrapper>
@@ -44,19 +78,23 @@ const Login = ({navigation}) => {
                     source={require('./../assets/img/IMG_7182.jpg')}
                     resizeMode="cover"
                 />
-                <PageTitle>MAJOR PROJECT</PageTitle>
+                <PageTitle>SensorySight</PageTitle>
                 <SubTitle>Account Login</SubTitle>
                 <Formik
                     initialValues={{
                         email: '',
                         password: ''
                     }}
-                    onSubmit={(values) => {
-                        console.log(values);
-                        navigation.navigate("Welcome");
+                    onSubmit={(values, {setSubmitting}) => {
+                        if (values.email === '' || values.password === ''){
+                            handleMessage('Please fill all the details');
+                            setSubmitting(false);
+                        }else{
+                            handleLogin(values, setSubmitting);
+                        }
                     } }
                 >
-                    {({ handleChange, handleBlur,handleSubmit,values}) => (
+                    {({ handleChange, handleBlur,handleSubmit,values, isSubmitting}) => (
                         <StyledFormArea>
                             <MyTextInput
                                 label="Email Address"
@@ -81,10 +119,15 @@ const Login = ({navigation}) => {
                                 hidePassword={hidePassword}
                                 setHidePassword={setHidePassword}
                             />
-                            <MsgBox>...</MsgBox>
-                            <StyledButton onPress={handleSubmit}>
-                                <ButtonText>Login</ButtonText>
-                            </StyledButton>
+                            <MsgBox type={messageType}>{message}</MsgBox>
+                            {!isSubmitting && (
+                                <StyledButton onPress={handleSubmit}>
+                                    <ButtonText>Login</ButtonText>
+                                </StyledButton>)}
+                            {isSubmitting && (
+                                <StyledButton disabled={true}>
+                                    <ActivityIndicator size="large" color={primary} />
+                                </StyledButton>)}
                             <Line />
                             <StyledButton google={true} onPress={handleSubmit}>
                                 <Fontisto name="google" color={primary} size={25}/>

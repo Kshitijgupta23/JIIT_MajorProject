@@ -55,7 +55,7 @@ const Signup = ({navigation}) => {
         <StyledContainer>
             <StatusBar style="dark" />
             <InnerContainer>
-                <PageTitle>MAJOR PROJECT</PageTitle>
+                <PageTitle>SensorySight</PageTitle>
                 <SubTitle>Account SignUp</SubTitle>
 
                 {show && (

@@ -3,9 +3,9 @@ import { View, Text } from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 
-import Login from './../screens/Login';
-import Signup from './../screens/Signup';
-import Welcome from './../screens/Welcome';
+import Login from './../screens/Login.jsx';
+import Signup from './../screens/Signup.jsx';
+import Welcome from './../screens/Welcome.jsx';
 
 import { Colors } from './../components/styles.js';
 

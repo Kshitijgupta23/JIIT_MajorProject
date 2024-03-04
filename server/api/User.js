@@ -10,12 +10,12 @@ router.post('/signup', (req,res) => {
     password = password.trim();
     dateOfBirth = dateOfBirth.trim();
 
-    if( name == '' || email == '' || password == '' || dateOfBirth == ''){
+    if( name == '' || email == '' || password == ''){  // ADD || dateOfBirth == '
         res.json({
             status: "Failed",
             message: "Empty input fields"
         });
-    }else if(!/^[a-zA-Z]*$/.test(name)){
+    }else if(!/^[a-zA-Z ]*$/.test(name)){
         res.json({
             status: "Failed",
             message: "Invalid name entered"
@@ -25,11 +25,11 @@ router.post('/signup', (req,res) => {
             status: "Failed",
             message: "Empty email entered"
         });
-    }else if(!new Date(dateOfBirth).getTime()){
-        res.json({
-            status: "Failed",
-            message: "Empty DOB entered"
-        });
+    // }else if(!new Date(dateOfBirth).getTime()){
+    //     res.json({
+    //         status: "Failed",
+    //         message: "Empty DOB entered"
+    //     });
     }else if(password.length < 8 ){
         res.json({
             status: "Failed",

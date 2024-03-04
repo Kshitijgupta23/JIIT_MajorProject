@@ -1,10 +1,11 @@
 import { useState } from 'react';
-import { View, Text, TouchableOpacity } from 'react-native';
+import { View, Text, TouchableOpacity, ActivityIndicator } from 'react-native';
 import { StatusBar } from 'expo-status-bar';
 import { Formik } from 'formik';
 
 import { Octicons, Ionicons, Fontisto } from '@expo/vector-icons';
 import DateTimePicker from '@react-native-community/datetimepicker';
+import axios from 'axios';
 
 import {
     StyledContainer,
@@ -39,6 +40,9 @@ const Signup = ({navigation}) => {
   const [date, setDate] = useState(new Date(2000,0,1));
   const [dob,setDob] = useState();
 
+  const [message, setMessage] = useState();
+  const [messageType, setMessageType] = useState();
+
   const onChange = (event, selectedDate) => {
         const currentDate = selectedDate || date;
         setShow(false);
@@ -48,6 +52,34 @@ const Signup = ({navigation}) => {
 
   const showDatePicker = () => {
     setShow(true);
+  }
+
+  const handleSignup = async (credentials, setSubmitting) => {
+        handleMessage(null);
+        const url = 'http://192.168.29.168:3000/user/signup';
+     
+        axios
+        .post(url,credentials)
+        .then((response) => {
+            const result = response.data;
+            const {message, status, data } = result;
+            if(status.toLowerCase() !== 'success'){
+                handleMessage(message, status);
+            }else{
+                navigation.navigate("Welcome",{...data});
+            }
+            setSubmitting(false);
+        })
+        .catch(error => {
+            console.log(error);
+            setSubmitting(false);
+            handleMessage("An error occurred, check your internet and try again.");
+        })
+  }
+
+  const handleMessage = (message, type = 'Failed') =>{
+    setMessage(message);
+    setMessageType(type);
   }
 
   return (
@@ -71,27 +103,40 @@ const Signup = ({navigation}) => {
 
                 <Formik
                     initialValues={{
-                        fullName: '',
+                        name: '',
                         email: '',
                         password: '',
                         dateOfBirth: '',
                         confirmPassword: ''
                     }}
-                    onSubmit={(values) => {
-                        console.log(values);
-                        navigation.navigate("Welcome");
+                    onSubmit={(values, { setSubmitting }) => {  
+                        // values = {...values,dateOfBirth: dob}
+                        if (
+                            values.email === '' ||
+                            values.password === '' ||
+                            values.name === '' ||
+                            values.password === ''
+                        ){
+                            handleMessage('Please fill all the details');
+                            setSubmitting(false);
+                        }else if(values.password !== values.confirmPassword){
+                            handleMessage('Passwords do not match');
+                            setSubmitting(false);
+                        }else{
+                            handleSignup(values, setSubmitting);
+                        }
                     }}
                 >
-                    {({ handleChange, handleBlur,handleSubmit,values}) => (
+                    {({ handleChange, handleBlur,handleSubmit,values, isSubmitting}) => (
                         <StyledFormArea>
                             <MyTextInput
                                 label="Full Name"
                                 icon="person"
                                 placeholder="John Doe"
                                 placeholderTextColor={darkLight}
-                                onChangeText={handleChange('fullName')}
-                                onBlur={handleBlur('fullName')}
-                                value={values.fullName}
+                                onChangeText={handleChange('name')}
+                                onBlur={handleBlur('name')}
+                                value={values.name}
                             />
                             <MyTextInput
                                 label="Email Address"
@@ -141,10 +186,15 @@ const Signup = ({navigation}) => {
                                 hidePassword={hidePassword}
                                 setHidePassword={setHidePassword}
                             />
-                            <MsgBox>...</MsgBox>
-                            <StyledButton onPress={handleSubmit}>
-                                <ButtonText>Sign Up</ButtonText>
-                            </StyledButton>
+                            <MsgBox type={messageType}>{message}</MsgBox>
+                            {!isSubmitting && (
+                                <StyledButton onPress={handleSubmit}>
+                                    <ButtonText>Sign Up</ButtonText>
+                                </StyledButton>)}
+                            {isSubmitting && (
+                                <StyledButton disabled={true}>
+                                    <ActivityIndicator size="large" color={primary} />
+                                </StyledButton>)}
                             <Line />
                             <ExtraView>
                                 <ExtraText>Already have an account?</ExtraText>

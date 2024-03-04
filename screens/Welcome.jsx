@@ -13,7 +13,9 @@ import {
     Avatar
 } from './../components/styles.js';
 
-const Welcome = ({navigation}) => {
+const Welcome = ({navigation, route}) => {
+
+    const { name, email } = route.params;
 
   return (
     <>
@@ -25,8 +27,8 @@ const Welcome = ({navigation}) => {
             />
             <WelcomeContainer>
                 <PageTitle welcome={true}>Welcome! Buddy</PageTitle>
-                <SubTitle welcome={true}>Kshitij Gupta</SubTitle>
-                <SubTitle welcome={true}>kshitij@gmail.com</SubTitle>
+                <SubTitle welcome={true}>{name || 'Kshitij Gupta'}</SubTitle>
+                <SubTitle welcome={true}>{email || 'kshitij@gmail.com'}</SubTitle>
                 <StyledFormArea>
                     <Avatar
                         source={require('./../assets/img/IMG_7182.jpg')}

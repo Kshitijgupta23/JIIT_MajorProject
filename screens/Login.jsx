@@ -50,10 +50,7 @@ const Login = ({navigation}) => {
             if(status.toLowerCase() !== 'success'){
                 handleMessage(message, status);
             }else{
-                console.log('NOT NAVIGATE');
-                navigation.navigate("Signup");
                 navigation.navigate("Welcome",{...data[0]});
-                console.log('NOT NAVIGATE');
             }
             setSubmitting(false);
         })
@@ -64,7 +61,7 @@ const Login = ({navigation}) => {
         })
   }
 
-  const handleMessage = (message, type = 'FAILED') =>{
+  const handleMessage = (message, type = 'Failed') =>{
     setMessage(message);
     setMessageType(type);
   }

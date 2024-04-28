@@ -18,48 +18,44 @@ import * as ImagePicker from "expo-image-picker";
 const Welcome = ({navigation, route}) => {
 
     const { name, email } = route.params;
-    const [galleryPhoto, setGalleryPhoto] = useState();
-    const [cameraPhoto, setCameraPhoto] = useState();
+    const [photo, setPhoto] = useState();
 
-    console.log(galleryPhoto);
-    console.log(cameraPhoto);
-
-    const openCamera = async () => {
+    const uploadImage = async (mode) =>{
         try{
-            await ImagePicker.requestCameraPermissionsAsync(); 
-            let result = await ImagePicker.launchCameraAsync({
-                cameraType: ImagePicker.CameraType.back,
-                allowsEditing: true,
-                aspect: [1,1],
-                quality: 1
-            });
-
-            if(!result.canceled){
-                setCameraPhoto(result.assets[0].uri);
-            }
-
-        }catch(error){
-            console.log("Error in uploading image");
-        }
-    };
-
-    const openGallery = async () =>{
-        try {
-            await ImagePicker.requestCameraPermissionsAsync();
-            let result = await ImagePicker.launchImageLibraryAsync({
+            let result={}
+            if(mode === "gallery"){
+                await ImagePicker.requestCameraPermissionsAsync();
+                result = await ImagePicker.launchImageLibraryAsync({
                 mediaTypes: ImagePicker.MediaTypeOptions.Images,
                 allowsEditing: true,
                 aspect: [1,1],
                 quality: 1,
             });
+            }else{
+                await ImagePicker.requestCameraPermissionsAsync(); 
+                result = await ImagePicker.launchCameraAsync({
+                cameraType: ImagePicker.CameraType.back,
+                allowsEditing: true,
+                aspect: [1,1],
+                quality: 1
+            });
+            }
 
             if(!result.canceled){
-                setGalleryPhoto(result.assets[0].uri);
+                await saveImage(result.assets[0].uri);
             }
         }catch(error){
-            console.log("Error in uploading image");
+            console.log(error);
         }
-    };
+    }
+
+    const saveImage = async (image) =>{
+        try{
+            setPhoto(image);
+        }catch(error){
+            console.log(error);
+        }
+    }
 
   return (
     <>
@@ -75,16 +71,20 @@ const Welcome = ({navigation, route}) => {
                         resizeMode="cover"
                     />        
                     <Line />
-                    <StyledButton onPress={openCamera}>
+                    <StyledButton onPress={() => uploadImage()}>
                         <ButtonText>Open Camera</ButtonText>
                     </StyledButton>
-                    <StyledButton onPress={openGallery}>
+                    <StyledButton onPress={() => uploadImage("gallery")}>
                         <ButtonText>Open Gallery</ButtonText>
                     </StyledButton>
                     <StyledButton logout={true} onPress={() => {navigation.navigate("Login")}}>
                         <ButtonText logout={true}>Logout</ButtonText>
                     </StyledButton>
                 </StyledFormArea>
+                <Avatar
+                        uri={{photo}}
+                        resizeMode="cover"
+                    /> 
             </WelcomeContainer>
         </InnerContainer>
     </>

@@ -9,6 +9,8 @@ const bodyParser = require('express').json;
 app.use(bodyParser());
 
 app.use('/user',UserRouter);
+console.log(process.cwd());
+
 
 app.listen(port, () => {
     console.log(`Server running on port ${port}`);

@@ -19,6 +19,7 @@ const Welcome = ({navigation, route}) => {
 
     const { name, email } = route.params;
     const [photo, setPhoto] = useState();
+    const [result,setResult] = useState();
 
     const uploadImage = async (mode) =>{
         try{
@@ -43,11 +44,37 @@ const Welcome = ({navigation, route}) => {
 
             if(!result.canceled){
                 await saveImage(result.assets[0].uri);
+                sendToBackend(image);
             }
         }catch(error){
             console.log(error);
         }
     }
+
+    const sendToBackend = async (imageUri) => {
+        try {
+
+          const formData = new FormData();
+          formData.append('image', {
+            uri: imageUri,
+            name: 'image.jpg',
+            type: 'image/jpeg', 
+          });
+    
+          const response = await fetch('http://localhost:3000/predict', {
+            method: 'POST',
+            body: formData,
+            headers: {
+              'Content-Type': 'multipart/form-data',
+            },
+          });
+    
+          const data = await response.json();
+          setResult(data.result);
+        } catch (error) {
+          console.error('Error sending image to backend:', error);
+        }
+      };
 
     const saveImage = async (image) =>{
         try{
@@ -82,9 +109,9 @@ const Welcome = ({navigation, route}) => {
                     </StyledButton>
                 </StyledFormArea>
                 <Avatar
-                        uri={{photo}}
+                        source={{uri: photo}}
                         resizeMode="cover"
-                    /> 
+                /> 
             </WelcomeContainer>
         </InnerContainer>
     </>

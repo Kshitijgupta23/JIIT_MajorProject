@@ -13,37 +13,53 @@ import {
     WelcomeImage,
     Avatar
 } from './../components/styles.js';
-import {launchCamera, launchImageLibrary} from 'react-native-image-picker';
-import { PermissionsAndroid } from 'react-native';
+import * as ImagePicker from "expo-image-picker";
 
 const Welcome = ({navigation, route}) => {
 
     const { name, email } = route.params;
     const [galleryPhoto, setGalleryPhoto] = useState();
-    const [cameraPhoto, setcameraPhoto] = useState();
+    const [cameraPhoto, setCameraPhoto] = useState();
 
     console.log(galleryPhoto);
     console.log(cameraPhoto);
 
-    let options = {
-        saveToPhotos: true,
-        mediaType: 'photo',
-    };
-
     const openCamera = async () => {
-        const granted = await PermissionsAndroid.request(
-            PermissionsAndroid.PERMISSIONS.CAMERA,
-        );
-        if(granted === PermissionsAndroid.RESULTS.GRANTED){
-            const result = await launchCamera(options);
-            setcameraPhoto(result.assets[0].uri);
+        try{
+            await ImagePicker.requestCameraPermissionsAsync(); 
+            let result = await ImagePicker.launchCameraAsync({
+                cameraType: ImagePicker.CameraType.back,
+                allowsEditing: true,
+                aspect: [1,1],
+                quality: 1
+            });
+
+            if(!result.canceled){
+                setCameraPhoto(result.assets[0].uri);
+            }
+
+        }catch(error){
+            console.log("Error in uploading image");
         }
     };
 
     const openGallery = async () =>{
-        const result = await launchImageLibrary(options);
-        setGalleryPhoto(result.assets[0].uri);
-    }
+        try {
+            await ImagePicker.requestCameraPermissionsAsync();
+            let result = await ImagePicker.launchImageLibraryAsync({
+                mediaTypes: ImagePicker.MediaTypeOptions.Images,
+                allowsEditing: true,
+                aspect: [1,1],
+                quality: 1,
+            });
+
+            if(!result.canceled){
+                setGalleryPhoto(result.assets[0].uri);
+            }
+        }catch(error){
+            console.log("Error in uploading image");
+        }
+    };
 
   return (
     <>

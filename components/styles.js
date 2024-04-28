@@ -32,7 +32,8 @@ export const InnerContainer = styled.View`
 export const WelcomeContainer = styled(InnerContainer)`
     padding: 25px;
     padding-top: 10px;
-    justify-content: center;
+    top: 30px;
+    ${'' /* justify-content: center; */}
 `;
 
 export const PageLogo = styled.Image`
@@ -127,6 +128,10 @@ export const StyledButton = styled.TouchableOpacity`
     border-radius: 5px;
     margin-vertical: 5px;
     height: 60px;
+    
+    ${(props) => props.logout === true && `
+        bottom: -300px;   
+    `}
 
     ${(props) => props.google === true && `
         background-color: ${green};

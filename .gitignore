@@ -3,6 +3,9 @@
 # dependencies
 node_modules/
 
+#model
+color-detection
+
 # Expo
 .expo/
 dist/

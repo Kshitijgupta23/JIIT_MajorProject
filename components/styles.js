@@ -68,6 +68,10 @@ export const PageTitle = styled.Text`
     ${(props) => props.welcome && `
         font-size: 35px;
     `}
+
+    ${(props) => props.welcome === 'y' && `
+        color: black;
+    `}
 `;
 
 export const SubTitle = styled.Text`

@@ -21,6 +21,7 @@ const Welcome = ({navigation, route}) => {
     const { name, email } = route.params;
     const [photo, setPhoto] = useState();
     const [result,setResult] = useState();
+    const display='y';
     
     const uploadImage = async (mode) =>{
         try{
@@ -119,7 +120,7 @@ const Welcome = ({navigation, route}) => {
                         source={{uri: photo}}
                         resizeMode="cover"
                 /> 
-                <PageTitle welcome={true}>{result}</PageTitle>
+                <PageTitle welcome={display}>{result}</PageTitle>
             </WelcomeContainer>
         </InnerContainer>
     </>

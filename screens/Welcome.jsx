@@ -14,6 +14,7 @@ import {
     Avatar
 } from './../components/styles.js';
 import * as ImagePicker from "expo-image-picker";
+import axios from "axios";
 
 const Welcome = ({navigation, route}) => {
 
@@ -51,29 +52,35 @@ const Welcome = ({navigation, route}) => {
         }
     }
 
+    async function blobToBase64(blob) {
+        const reader = new FileReader()
+        reader.readAsDataURL(blob)
+    
+        return new Promise((resolve, reject) => {
+            reader.onerror = reject;
+            reader.onload = () => {
+                resolve(String(reader?.result).split(",")[1])
+            }
+        })
+    }
+
     const sendToBackend = async (imageUri) => {
         try {
-          const formData = new FormData();
+            const imageResponse = await fetch(imageUri);
+            const imageBlob = await imageResponse.blob();
+            const b64 = await blobToBase64(imageBlob);
         
-          const response = await fetch('http://127.0.0.1:8000/predict', { 
-            method: 'POST',
-            body: {
-                uri: imageUri,
-                name: 'image.jpg',
-                type: 'image/jpeg',
-            },
-            headers: {
-              'Content-Type': 'multipart/form-data',
-            },
-          });
-    
-          const data = await response.json();
-          console.log(data);
-          console.log(response);
-          setResult(data.result);
-        } catch (error) {
-          console.error('Error sending image to backend:', error);
-        }
+            const response = await axios.post('http://192.168.29.168:3000/predict', {image: b64}, {
+              headers: {
+                'Content-Type': 'application/json' 
+              }
+            });
+        
+            const data = await response.data.highestScoreLabel;
+            setResult(data); 
+          } catch (error) {
+            console.error('Error sending image to backend:', error);
+          }
       };
 
     const saveImage = async (image) =>{
@@ -112,6 +119,7 @@ const Welcome = ({navigation, route}) => {
                         source={{uri: photo}}
                         resizeMode="cover"
                 /> 
+                <PageTitle welcome={true}>{result}</PageTitle>
             </WelcomeContainer>
         </InnerContainer>
     </>

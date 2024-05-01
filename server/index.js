@@ -1,59 +1,52 @@
 require('./config/db');
-
-const app = require('express')();
+const express = require('express');
 const multer = require('multer');
-const tf = require('@tensorflow/tfjs-node');
-const { Image } = require('image-js');
 const fs = require('fs');
-const port = 3000;
-
-// const upload = multer({ dest: 'uploads/' });
-
-
-// const modelFile = '../assets/model_unquant.tflite';
-// const labelsFile = '../assets/labels.txt';
-
-// let model;
-// (async () => {
-//   model = await tf.loadGraphModel(`file://${modelFile}`);
-// })();
-
-// app.post('/predict', upload.single('image'), async (req, res) => {
-//   try {
-//     const image = await Image.load(req.file.path);
-    
-//     // Preprocess the image (resize, convert to tensor, normalize, etc.)
-//     // Your preprocessing steps here...
-    
-//     const inputTensor = tf.tensor(image.data, [1, image.height, image.width, image.channels], 'float32');
-//     const predictions = model.predict(inputTensor);
-
-//     const topPredictions = predictions[0]
-//       .dataSync()
-//       .map((score, index) => ({ label: index, score }))
-//       .sort((a, b) => b.score - a.score)
-//       .slice(0, 5);
-
-//     const labels = fs.readFileSync(labelsFile, 'utf-8').split('\n');
-
-//     const result = topPredictions.map(({ label, score }) => ({
-//       label: labels[label],
-//       score: score.toFixed(4),
-//     }));
-
-//     res.json({ result });
-//   } catch (error) {
-//     console.error('Error processing image:', error);
-//     res.status(500).json({ error: 'Internal server error' });
-//   }
-// });
-
-const UserRouter = require('./api/User.js');
-
+const axios = require('axios');
+const FormData = require('form-data');
 const bodyParser = require('express').json;
-app.use(bodyParser());
+const UserRouter = require('./api/User.js');
+const path = require('path');
 
+const port = 3000;
+const app = express();
+
+app.use(express.json({limit: '100mb'}));
 app.use('/user',UserRouter);
+
+
+
+app.post('/predict', async (req, res) => {
+    try {
+
+        try {
+            if (!req.body || !req.body.image) {
+              return res.status(400).json({ message: 'No image data found in request body!' });
+            }
+            const base64Data = req.body.image; 
+            const buffer = Buffer.from(base64Data, 'base64');
+            await fs.promises.writeFile(`uploads/test_image.jpg`, buffer);
+            
+            const response = await axios.get('http://127.0.0.1:8000/predictColor');
+
+            const sortedResult = response.data.result.sort((a, b) => b.score - a.score);
+            const highestScoreLabel = sortedResult[0].label;
+
+            res.json({ highestScoreLabel});
+          } catch (error) {
+            console.error('Error uploading image:', error);
+            res.status(500).send("Error");
+          }
+
+        
+    } catch (error) {
+        console.error('Error uploading image:', error);
+        res.status(500).send("Error");
+    }
+});
+
+
+app.get("/", (req, res) => {res.send("Hello")})
 
 app.listen(port, () => {
     console.log(`Server running on port ${port}`);

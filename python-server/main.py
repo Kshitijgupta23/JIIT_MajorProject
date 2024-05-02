@@ -4,6 +4,8 @@ from PIL import Image
 import tensorflow as tf
 from tensorflow.keras.preprocessing import image
 
+# uvicorn main:app --reload
+
 app = FastAPI()
 
 # Load the TensorFlow Lite model

@@ -56,7 +56,7 @@ const Signup = ({navigation}) => {
 
   const handleSignup = async (credentials, setSubmitting) => {
         handleMessage(null);
-        const url = 'http://192.168.29.168:3000/user/signup';
+        const url = 'http://172.20.10.4:3000/user/signup';
      
         axios
         .post(url,credentials)

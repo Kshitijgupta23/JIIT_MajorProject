@@ -71,7 +71,7 @@ const Welcome = ({navigation, route}) => {
             const imageBlob = await imageResponse.blob();
             const b64 = await blobToBase64(imageBlob);
         
-            const response = await axios.post('http://192.168.29.168:3000/predict', {image: b64}, {
+            const response = await axios.post('http://172.20.10.4:3000/predict', {image: b64}, {
               headers: {
                 'Content-Type': 'application/json' 
               }

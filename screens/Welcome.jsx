@@ -1,5 +1,6 @@
 import { StatusBar } from 'expo-status-bar';
 import {useState} from 'react';
+import * as Speech from 'expo-speech';
 
 import {
     InnerContainer,
@@ -71,7 +72,7 @@ const Welcome = ({navigation, route}) => {
             const imageBlob = await imageResponse.blob();
             const b64 = await blobToBase64(imageBlob);
         
-            const response = await axios.post('http://172.20.10.4:3000/predict', {image: b64}, {
+            const response = await axios.post('http://192.168.1.25:3000/predict', {image: b64}, {
               headers: {
                 'Content-Type': 'application/json' 
               }
@@ -79,10 +80,15 @@ const Welcome = ({navigation, route}) => {
         
             const data = await response.data.highestScoreLabel;
             setResult(data); 
+            speak(data);
           } catch (error) {
             console.error('Error sending image to backend:', error);
           }
       };
+      
+    const speak = (text) =>{
+        Speech.speak(text);
+    };
 
     const saveImage = async (image) =>{
         try{
